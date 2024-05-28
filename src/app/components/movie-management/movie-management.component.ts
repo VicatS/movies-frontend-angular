@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Movie } from 'src/app/models/movie.interface';
+import { AlertService } from 'src/app/services/alert.service';
 import { MovieService } from 'src/app/services/movie.service';
 
 @Component({
@@ -11,7 +12,11 @@ import { MovieService } from 'src/app/services/movie.service';
 export class MovieManagementComponent implements OnInit {
   movies: Movie[] = [];
 
-  constructor(private movieService: MovieService, private router: Router) {}
+  constructor(
+    private movieService: MovieService,
+    private router: Router,
+    private alertService: AlertService
+  ) {}
 
   ngOnInit(): void {
     this.movieService.getMovies().subscribe((data: Movie[]) => {
@@ -25,8 +30,17 @@ export class MovieManagementComponent implements OnInit {
 
   deleteMovie(id: number): void {
     if (confirm('Are you sure you want to delete this movie?')) {
-      this.movieService.deleteMovie(id).subscribe(() => {
-        this.movies = this.movies.filter((movie) => movie.id !== id);
+      this.movieService.deleteMovie(id).subscribe({
+        next: () => {
+          this.movies = this.movies.filter((movie) => movie.id !== id);
+          this.alertService.success('Movie deleted successfully');
+        },
+        error: (error) => {
+          this.alertService.error('Failed to delete movie');
+        },
+        complete: () => {
+          console.log('Movie deletion process completed.');
+        },
       });
     }
   }

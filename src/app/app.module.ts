@@ -10,6 +10,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { MovieManagementComponent } from './components/movie-management/movie-management.component';
+import { AlertComponent } from './components/alert/alert.component';
+import { AlertService } from './services/alert.service';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,8 @@ import { MovieManagementComponent } from './components/movie-management/movie-ma
     MovieDetailComponent,
     MovieFormComponent,
     NavbarComponent,
-    MovieManagementComponent
+    MovieManagementComponent,
+    AlertComponent
   ],
   imports: [
     BrowserModule,
@@ -26,7 +29,7 @@ import { MovieManagementComponent } from './components/movie-management/movie-ma
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [AlertService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

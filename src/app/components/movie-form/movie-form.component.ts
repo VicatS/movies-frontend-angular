@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Movie } from 'src/app/models/movie.interface';
+import { AlertService } from 'src/app/services/alert.service';
 import { ClassificationService } from 'src/app/services/classification.service';
 import { GenreService } from 'src/app/services/genre.service';
 import { MovieService } from 'src/app/services/movie.service';
@@ -12,13 +13,14 @@ import { MovieService } from 'src/app/services/movie.service';
   styleUrls: ['./movie-form.component.css'],
 })
 export class MovieFormComponent implements OnInit {
+  @ViewChild('fileInput') fileInput: ElementRef | undefined;
   @Input() movie: Movie | null = null;
   movieForm: FormGroup;
   selectedFile: File | null = null;
   imagePreviewUrl: string | ArrayBuffer | null = null;
 
   genres: string[] = [];
-  classifications: string[] = []
+  classifications: string[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -26,7 +28,8 @@ export class MovieFormComponent implements OnInit {
     private genreService: GenreService,
     private router: Router,
     private route: ActivatedRoute,
-    private classificationService: ClassificationService
+    private classificationService: ClassificationService,
+    private alertService: AlertService
   ) {
     this.movieForm = this.fb.group({
       name: ['', Validators.required],
@@ -69,10 +72,18 @@ export class MovieFormComponent implements OnInit {
   removeImage(): void {
     this.selectedFile = null;
     this.imagePreviewUrl = null;
-    this.movieForm.get('cover_image')?.reset();
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+    // this.movieForm.get('cover_image')?.reset();
   }
 
   onSubmit(): void {
+    if (this.movieForm!.invalid) {
+      this.movieForm!.markAllAsTouched();
+      return;
+    }
+
     if (this.movieForm.valid) {
       const formData = new FormData();
       formData.append('name', this.movieForm.get('name')?.value);
@@ -92,14 +103,30 @@ export class MovieFormComponent implements OnInit {
       }
 
       if (this.movie) {
-        this.movieService
-          .updateMovie(formData, this.movie.id!)
-          .subscribe(() => {
+        this.movieService.updateMovie(formData, this.movie.id!).subscribe({
+          next: () => {
             this.router.navigate(['/manage']);
-          });
+            this.alertService.success('Movie updated successfully');
+          },
+          error: (error) => {
+            this.alertService.error('Failed to update movie');
+          },
+          complete: () => {
+            console.log('Movie update process completed.');
+          },
+        });
       } else {
-        this.movieService.addMovie(formData).subscribe(() => {
-          this.router.navigate(['/manage']);
+        this.movieService.addMovie(formData).subscribe({
+          next: () => {
+            this.router.navigate(['/manage']);
+            this.alertService.success('Movie created successfully');
+          },
+          error: (error) => {
+            this.alertService.error('Failed to create movie');
+          },
+          complete: () => {
+            console.log('Movie creation process completed.');
+          },
         });
       }
     }
