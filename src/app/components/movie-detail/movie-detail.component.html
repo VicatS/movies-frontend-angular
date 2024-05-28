@@ -1,0 +1,15 @@
+<div *ngIf="movie" class="container">
+  <div class="row mt-1">
+    <div class="col-md-12">
+      <img [src]="getImageUrl(movie.cover_image)" class="img-fluid" alt="{{ movie.name }}" />
+    </div>
+    <div class="col-md-12">
+      <h2>{{ movie.name }}</h2>
+      <p><strong>Classification:</strong> {{ movie.classification }}</p>
+      <p><strong>Genre:</strong> {{ movie.genre }}</p>
+      <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+      <h5 class="text-center">SYNOPSIS</h5>
+      <p class="text-justify">{{ movie.synopsis }}</p>
+    </div>
+  </div>
+</div>

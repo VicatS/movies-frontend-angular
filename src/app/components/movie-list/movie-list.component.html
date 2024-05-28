@@ -1,0 +1,36 @@
+<div class="container">
+  <h1 class="my-4">Movie Catalog</h1>
+
+  <div class="btn-group mb-4">
+    <button
+      class="btn btn-secondary"
+      (click)="filterByGenre('All')"
+      [class.active]="selectedGenre === 'All'"
+    >
+      All
+    </button>
+    <button
+      *ngFor="let genre of genres"
+      (click)="filterByGenre(genre)"
+      class="btn btn-secondary"
+      [class.active]="selectedGenre === genre"
+    >
+      {{ genre }}
+    </button>
+  </div>
+
+  <div class="row">
+    <div *ngFor="let movie of movies" class="col-md-4 mb-2">
+      <div class="card rounded" (click)="goToDetail(movie.id!)">
+        <div class="image-container">
+          <img
+            [src]="getImageUrl(movie.cover_image)"
+            class="card-img-top"
+            alt="{{ movie.name }}"
+          />
+          <div class="caption">{{ movie.name }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
