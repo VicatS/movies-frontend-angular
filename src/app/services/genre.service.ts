@@ -12,6 +12,7 @@ export class GenreService {
     'Science Fiction',
     'Adventure',
     'Musical',
+    'Animation'
   ];
 
   constructor() {}
